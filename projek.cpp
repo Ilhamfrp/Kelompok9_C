@@ -109,7 +109,6 @@ void cariKontak(Kontak* head, const string& keyword) {
         cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
 }
 
-// Urutkan berdasarkan nama (Bubble Sort - swap isi)
 void urutkanKontak(Kontak* head) {
     if (head == nullptr) return;
 
@@ -131,7 +130,6 @@ void urutkanKontak(Kontak* head) {
     cout << "Kontak berhasil diurutkan berdasarkan nama.\n";
 }
 
-// Hapus semua node (bebaskan memori)
 void hapusSemua(Kontak*& head) {
     while (head != nullptr) {
         Kontak* hapus = head;
@@ -155,7 +153,6 @@ int main() {
         cout << "0. Keluar\n";
         cout << "Pilih: ";
         cin >> pilihan;
-        getline(cin, dummy); // untuk membersihkan newline
 
         switch (pilihan) {
             case 1:
@@ -174,11 +171,11 @@ int main() {
                 urutkanKontak(head);
                 simpanKeFile(head);
                 break;
-            case 0:
-                cout << "Keluar dari program.\n";
+            case 5:
+                cout << "Keluar dari program " << endl;
                 break;
             default:
-                cout << "Pilihan tidak valid.\n";
+                cout << "Pilihan tidak valid " << endl;
         }
     } while (pilihan != 0);
 
