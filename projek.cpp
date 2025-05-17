@@ -11,7 +11,7 @@ struct Kontak {
 };
 
 // Baca dari file
-void bacaDariFile(Kontak*& head) {
+void bacaFile(Kontak*& head) {
     ifstream file("kontak.txt");
     if (!file) {
         cout << "File kontak.txt belum ada.\n";
@@ -40,7 +40,7 @@ void bacaDariFile(Kontak*& head) {
 }
 
 // Simpan ke file
-void simpanKeFile(Kontak* head) {
+void simpanFile(Kontak* head) {
     ofstream file("kontak.txt");
     Kontak* temp = head;
     while (temp != nullptr) {
