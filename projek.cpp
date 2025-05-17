@@ -150,7 +150,7 @@ int main() {
         cout << "2. Tampilkan Semua Kontak\n";
         cout << "3. Cari Kontak\n";
         cout << "4. Urutkan Kontak\n";
-        cout << "0. Keluar\n";
+        cout << "5. Keluar\n";
         cout << "Pilih: ";
         cin >> pilihan;
 
