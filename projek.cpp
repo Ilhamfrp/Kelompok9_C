@@ -109,6 +109,37 @@ void cariKontak(Kontak* head, const string& keyword) {
         cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
 }
 
+void hapusKontak(Kontak*& head, const string& keyword) {
+    if (head == nullptr) {
+        cout << "Daftar kontak kosong.\n";
+        return;
+    }
+
+    Kontak* temp = head;
+    Kontak* prev = nullptr;
+    bool ditemukan = false;
+
+    while (temp != nullptr) {
+        if (temp->nama == keyword) {
+            ditemukan = true;
+            if (prev == nullptr) {
+                head = temp->next;
+            } else {
+                prev->next = temp->next;
+            }
+            delete temp;
+            cout << "Kontak \"" << keyword << "\" berhasil dihapus.\n";
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (!ditemukan) {
+        cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
+    }
+}
+
 void urutkanKontak(Kontak* head) {
     if (head == nullptr) return;
 
@@ -140,7 +171,7 @@ void hapusSemua(Kontak*& head) {
 
 int main() {
     Kontak* head = nullptr;
-    bacaDariFile(head);
+    bacaFile(head);
     int pilihan;
     string dummy, cari;
 
@@ -150,14 +181,16 @@ int main() {
         cout << "2. Tampilkan Semua Kontak\n";
         cout << "3. Cari Kontak\n";
         cout << "4. Urutkan Kontak\n";
-        cout << "5. Keluar\n";
+        cout << "5. Hapus Kontak\n";
+        cout << "6. Keluar\n";
         cout << "Pilih: ";
         cin >> pilihan;
+        cin.ignore();
 
         switch (pilihan) {
             case 1:
                 tambahKontak(head);
-                simpanKeFile(head);
+                simpanFile(head);
                 break;
             case 2:
                 tampilkanKontak(head);
@@ -169,17 +202,24 @@ int main() {
                 break;
             case 4:
                 urutkanKontak(head);
-                simpanKeFile(head);
+                simpanFile(head);
                 break;
             case 5:
+                cout << "Masukkan nama kontak yang ingin dihapus: ";
+                getline(cin, cari);
+                hapusKontak(head, cari);
+                simpanFile(head);
+                break;
+            case 6:
                 cout << "Keluar dari program " << endl;
                 break;
             default:
                 cout << "Pilihan tidak valid " << endl;
         }
-    } while (pilihan != 0);
+    } while (pilihan != 6);
 
     hapusSemua(head);
     return 0;
 }
+
 
