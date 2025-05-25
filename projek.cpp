@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 using namespace std;
@@ -10,7 +11,6 @@ struct Kontak {
     Kontak* next;
 };
 
-// Baca dari file
 void bacaFile(Kontak*& head) {
     ifstream file("kontak.txt");
     if (!file) {
@@ -39,7 +39,6 @@ void bacaFile(Kontak*& head) {
     file.close();
 }
 
-// Simpan ke file
 void simpanFile(Kontak* head) {
     ofstream file("kontak.txt");
     Kontak* temp = head;
@@ -52,7 +51,6 @@ void simpanFile(Kontak* head) {
     file.close();
 }
 
-// Tambah kontak baru
 void tambahKontak(Kontak*& head) {
     Kontak* baru = new Kontak;
     cout << "Masukkan Nama  : ";
@@ -75,7 +73,6 @@ void tambahKontak(Kontak*& head) {
     cout << "Kontak berhasil ditambahkan!\n";
 }
 
-// Tampilkan semua kontak
 void tampilkanKontak(Kontak* head) {
     if (head == nullptr) {
         cout << "Daftar kontak kosong.\n";
@@ -92,7 +89,6 @@ void tampilkanKontak(Kontak* head) {
     }
 }
 
-// Cari kontak berdasarkan nama
 void cariKontak(Kontak* head, const string& keyword) {
     bool ditemukan = false;
     Kontak* temp = head;
@@ -176,13 +172,19 @@ int main() {
     string dummy, cari;
 
     do {
-        cout << "\n=== MENU DAFTAR KONTAK ===\n";
-        cout << "1. Tambah Kontak\n";
-        cout << "2. Tampilkan Semua Kontak\n";
-        cout << "3. Cari Kontak\n";
-        cout << "4. Urutkan Kontak\n";
-        cout << "5. Hapus Kontak\n";
-        cout << "6. Keluar\n";
+        cout << setfill('=') << setw(35) << " "                 << endl;
+        cout << "Selamat Datang di Kontak!" << endl;
+        cout << setfill('=') << setw(35) << " "                 << endl;
+        cout << "Silakan pilih layanan :"                           << endl;
+        cout << "1. Tambah Kontak" << endl;
+        cout << "2. Tampilkan Semua Kontak" << endl;
+        cout << "3. Cari Kontak" << endl;
+        cout << "4. Urutkan Kontak" << endl;
+        cout << "5. Hapus Kontak" << endl;
+        cout << "6. Blokir Nomor" << endl;
+        cout << "7. Lihat Kontak Terblokir" << endl;
+        cout << "8. Keluar" << endl;
+        cout << setfill('-') << setw(35) << " "                 << endl;
         cout << "Pilih: ";
         cin >> pilihan;
         cin.ignore();
@@ -221,5 +223,3 @@ int main() {
     hapusSemua(head);
     return 0;
 }
-
-
