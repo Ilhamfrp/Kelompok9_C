@@ -165,11 +165,81 @@ void hapusSemua(Kontak*& head) {
     }
 }
 
+void blokirNomor(Kontak*& head) {
+    string nama;
+    cout << "Masukkan nama kontak yang ingin diblokir: ";
+    getline(cin, nama);
+
+    Kontak* temp = head;
+    bool ditemukan = false;
+
+    string simpannama, simpannomor, simpanhp;
+
+    while (temp != nullptr) {
+        if (temp->nama == nama) {
+            simpannama = temp->nama;
+            simpannomor = temp->noHP;
+            simpanhp = temp->email;
+            ditemukan = true;
+            break;
+        }
+        temp = temp->next;
+    }
+
+    if (ditemukan) {
+        string data;
+        ifstream bacaLama("blokir.txt");
+        string baris;
+        while (getline(bacaLama, baris)) {
+            data += baris + "\n";
+        }
+        bacaLama.close();
+
+       
+        data += simpannama + "\n" + simpannomor + "\n" + simpanhp + "\n";
+
+        ofstream blokir("blokir.txt");
+        blokir << data;
+        blokir.close();
+
+  
+        hapusKontak(head, nama);
+        simpanFile(head);
+
+        cout << "Kontak \"" << nama << "\" berhasil diblokir dan dihapus dari daftar utama.\n";
+    } else {
+        cout << "Kontak \"" << nama << "\" tidak ditemukan di daftar.\n";
+    }
+}
+
+
+
+void tampilkanBlokir() {
+    ifstream file("blokir.txt");
+    if (!file) {
+        cout << "Belum ada nomor yang diblokir.\n";
+        return;
+    }
+
+    string nama, noHP, email;
+    int nomor = 1;
+    while (getline(file, nama) && getline(file, noHP) && getline(file, email)) {
+        cout << nomor++ << ". Nama : " << nama << endl;
+        cout << "   No HP: " << noHP << endl;
+        cout << "   Email: " << email << endl << endl;
+    }
+
+    file.close();
+}
+
+
 int main() {
     Kontak* head = nullptr;
     bacaFile(head);
     int pilihan;
     string dummy, cari;
+
+
 
     do {
         cout << setfill('=') << setw(35) << " "                 << endl;
@@ -212,14 +282,21 @@ int main() {
                 hapusKontak(head, cari);
                 simpanFile(head);
                 break;
-            case 6:
-                cout << "Keluar dari program " << endl;
+              case 6:
+                blokirNomor(head);
+                break;
+            case 7:
+                tampilkanBlokir();
+                break;
+            case 8:
+                cout << "Keluar dari program.\n";
                 break;
             default:
-                cout << "Pilihan tidak valid " << endl;
+                cout << "Pilihan tidak valid.\n";
         }
-    } while (pilihan != 6);
+    } while (pilihan != 8);
 
     hapusSemua(head);
     return 0;
 }
+
