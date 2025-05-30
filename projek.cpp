@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <vector>
 using namespace std;
 
 struct Kontak {
@@ -68,8 +69,8 @@ bool nomorsudahada(Kontak* head, const string& noHP) {
     return false;
 }
 
-bool nomordiblokir(Kontak* head, const string& noHP){
-    ifstream file ("blokir.txt");
+bool nomordiblokir( const string& noHP){
+   ifstream file("blokir.txt");
     if (!file) {
         return false;
     }
@@ -80,6 +81,7 @@ bool nomordiblokir(Kontak* head, const string& noHP){
             return true;
         }
     }
+    return false;
 }
  
 void tambahKontak(Kontak*& head) {
@@ -100,11 +102,12 @@ void tambahKontak(Kontak*& head) {
         delete baru;
         return;
     }
-    if (nomordiblokir(head, baru->noHP)) {
-        cout << "Nomor HP ini sudah diblokir.\n";
-        delete baru;
-        return;
-    }
+    if (nomordiblokir(baru->noHP)) {
+    cout << "Nomor HP ini sudah diblokir.\n";
+    delete baru;
+    return;
+}   
+
     baru->next = nullptr;
 
     if (head == nullptr) {
@@ -154,55 +157,104 @@ void cariKontak(Kontak* head, const string& keyword) {
     
 
 }
+
 void editnamakontak(Kontak*& head, const string& keyword) {
-    string lowerKeyword = toLower(keyword);
+    vector<Kontak*> daftarCocok;
     Kontak* temp = head;
-    while (temp != nullptr)
-    {
-        if (toLower(temp->nama) == lowerKeyword) {
-            cout << "masukkan nama baru : ";
-            getline(cin, temp->nama);
-
-            cout << "kontak \"" << keyword << "\" berhasil diubah menjadi \"" << temp->nama << "\".\n";
-         return;     }
-         temp = temp->next;
-    }
-    cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";  
-}
-
-void hapusKontak(Kontak*& head, const string& keyword, bool blokir = false) {
     string lowerKeyword = toLower(keyword);
-    if (head == nullptr) {
-        if(!blokir)
-        cout << "Daftar kontak kosong.\n";
+
+    cout << "Hasil pencarian untuk \"" << keyword << "\":\n";
+
+    while (temp != nullptr) {
+        if (toLower(temp->nama).find(lowerKeyword) != string::npos) {
+            daftarCocok.push_back(temp);
+            cout << daftarCocok.size() << ". Nama : " << temp->nama << endl;
+            cout << "   No HP: " << temp->noHP << ", Email: " << temp->email << endl;
+        }
+        temp = temp->next;
+    }
+
+    if (daftarCocok.empty()) {
+        cout << "Tidak ditemukan kontak dengan nama tersebut.\n";
         return;
     }
 
+    int pilih = 1;
+    if (daftarCocok.size() > 1) {
+        cout << "Masukkan nomor urutan kontak yang ingin diubah (1-" << daftarCocok.size() << "): ";
+        cin >> pilih;
+        cin.ignore();
+        if (pilih < 1 || pilih > daftarCocok.size()) {
+            cout << "Pilihan tidak valid.\n";
+            return;
+        }
+    }
+
+    Kontak* target = daftarCocok[pilih - 1];
+    cout << "Masukkan nama baru: ";
+    getline(cin, target->nama);
+    cout << "Kontak berhasil diubah.\n";
+}
+
+void hapusKontak(Kontak*& head, const string& keyword, bool blokir = false) {
+    vector<Kontak*> daftarCocok;
     Kontak* temp = head;
     Kontak* prev = nullptr;
-    bool ditemukan = false;
+    string lowerKeyword = toLower(keyword);
 
     while (temp != nullptr) {
-        if (toLower(temp->nama) == lowerKeyword) {
-            ditemukan = true;
+        if (toLower(temp->nama).find(lowerKeyword) != string::npos) {
+            daftarCocok.push_back(temp);
+        }
+        temp = temp->next;
+    }
+
+    if (daftarCocok.empty()) {
+        if (!blokir)
+            cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
+        return;
+    }
+
+    int pilih = 1;
+    if (daftarCocok.size() > 1) {
+        cout << "Ditemukan beberapa kontak:\n";
+        for (size_t i = 0; i < daftarCocok.size(); ++i) {
+            cout << i + 1 << ". Nama : " << daftarCocok[i]->nama << endl;
+            cout << "   No HP: " << daftarCocok[i]->noHP << ", Email: " << daftarCocok[i]->email << endl;
+        }
+
+        cout << "Pilih nomor urutan yang ingin dihapus (1-" << daftarCocok.size() << "): ";
+        cin >> pilih;
+        cin.ignore();
+
+        if (pilih < 1 || pilih > daftarCocok.size()) {
+            cout << "Pilihan tidak valid.\n";
+            return;
+        }
+    }
+
+    Kontak* target = daftarCocok[pilih - 1];
+
+    temp = head;
+    prev = nullptr;
+
+    while (temp != nullptr) {
+        if (temp == target) {
             if (prev == nullptr) {
                 head = temp->next;
             } else {
                 prev->next = temp->next;
             }
             delete temp;
-            if(!blokir)
-            cout << "Kontak \"" << keyword << "\" berhasil dihapus.\n";
+            if (!blokir)
+                cout << "Kontak \"" << target->nama << "\" berhasil dihapus.\n";
             return;
         }
         prev = temp;
         temp = temp->next;
     }
-
-    if (!ditemukan && !blokir) {
-        cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
-    }
 }
+
 
 void urutkanKontak(Kontak* head) {
     if (head == nullptr) {
@@ -236,54 +288,59 @@ void hapusSemua(Kontak*& head) {
 }
 
 void blokirNomor(Kontak*& head) {
-    string nama;
+    string keyword;
     cout << "Masukkan nama kontak yang ingin diblokir: ";
-    getline(cin, nama);
+    getline(cin, keyword);
 
+    vector<Kontak*> daftarCocok;
     Kontak* temp = head;
-    bool ditemukan = false;
-
-    string simpannama, simpannomor, simpanhp;
+    string lowerKeyword = toLower(keyword);
 
     while (temp != nullptr) {
-        
-        if (toLower(temp->nama) == toLower(nama)) {
-            simpannama = temp->nama;
-            simpannomor = temp->noHP;
-            simpanhp = temp->email;
-            ditemukan = true;
-            break;
+        if (toLower(temp->nama).find(lowerKeyword) != string::npos) {
+            daftarCocok.push_back(temp);
         }
         temp = temp->next;
     }
 
-    if (ditemukan) {
-        string data;
-        ifstream bacaLama("blokir.txt");
-        string baris;
-        while (getline(bacaLama, baris)) {
-            data += baris + "\n";
+    if (daftarCocok.empty()) {
+        cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
+        return;
+    }
+
+    int pilih = 1;
+    if (daftarCocok.size() > 1) {
+        cout << "Hasil pencarian:\n";
+        for (size_t i = 0; i < daftarCocok.size(); ++i) {
+            cout << i + 1 << ". Nama : " << daftarCocok[i]->nama << endl;
+            cout << "   No HP: " << daftarCocok[i]->noHP << ", Email: " << daftarCocok[i]->email << endl;
         }
-        bacaLama.close();
+        cout << "Masukkan nomor urutan kontak yang ingin diblokir (1-" << daftarCocok.size() << "): ";
+        cin >> pilih;
+        cin.ignore();
+        if (pilih < 1 || pilih > daftarCocok.size()) {
+            cout << "Pilihan tidak valid.\n";
+            return;
+        }
+    }
 
-       
-        data += simpannama + "\n" + simpannomor + "\n" + simpanhp + "\n";
+    Kontak* target = daftarCocok[pilih - 1];
 
-        ofstream blokir("blokir.txt");
-        blokir << data;
+    ofstream blokir("blokir.txt", ios::app);
+    if (blokir) {
+        blokir << target->nama << "\n"
+               << target->noHP << "\n"
+               << target->email << "\n";
         blokir.close();
 
-  
-        hapusKontak(head, nama, true);
+        hapusKontak(head, target->nama, true);
         simpanFile(head);
 
-        cout << "Kontak \"" << nama << "\" berhasil diblokir dan dihapus dari daftar utama.\n";
+        cout << "Kontak \"" << target->nama << "\" berhasil diblokir dan dihapus dari daftar utama.\n";
     } else {
-        cout << "Kontak \"" << nama << "\" tidak ditemukan di daftar.\n";
+        cout << "Gagal membuka file blokir.txt.\n";
     }
 }
-
-
 
 void tampilkanBlokir() {
     ifstream file("blokir.txt");
@@ -301,6 +358,83 @@ void tampilkanBlokir() {
     }
 
     file.close();
+}
+
+void unblokNomorByNama(Kontak*& head) {
+    cout << "Masukkan nama kontak yang ingin di-unblokir: ";
+    string keyword;
+    getline(cin, keyword);
+    string lowerKeyword = toLower(keyword);
+
+    ifstream file("blokir.txt");
+    if (!file) {
+        cout << "Belum ada nomor yang diblokir.\n";
+        return;
+    }
+
+    vector<Kontak*> blokirList;
+    vector<Kontak*> hasilCocok;
+
+    string nama, noHP, email;
+    while (getline(file, nama) && getline(file, noHP) && getline(file, email)) {
+        Kontak* k = new Kontak{nama, noHP, email, nullptr};
+        blokirList.push_back(k);
+        if (toLower(nama).find(lowerKeyword) != string::npos) {
+            hasilCocok.push_back(k);
+        }
+    }
+    file.close();
+
+    if (hasilCocok.empty()) {
+        cout << "Kontak \"" << keyword << "\" tidak ditemukan di daftar blokir.\n";
+        return;
+    }
+
+    int pilih = 1;
+    if (hasilCocok.size() > 1) {
+        cout << "Ditemukan beberapa kontak dengan nama \"" << keyword << "\":\n";
+        for (size_t i = 0; i < hasilCocok.size(); ++i) {
+            cout << i + 1 << ". Nama : " << hasilCocok[i]->nama << "\n";
+            cout << "   No HP: " << hasilCocok[i]->noHP << "\n";
+            cout << "   Email: " << hasilCocok[i]->email << "\n\n";
+        }
+        cout << "Pilih nomor yang ingin di-unblokir (1-" << hasilCocok.size() << "): ";
+        cin >> pilih;
+        cin.ignore();
+        if (pilih < 1 || pilih > hasilCocok.size()) {
+            cout << "Pilihan tidak valid.\n";
+            return;
+        }
+    } else {
+        cout << "Kontak ditemukan dan akan di-unblokir:\n";
+        cout << "Nama : " << hasilCocok[0]->nama << "\n";
+        cout << "No HP: " << hasilCocok[0]->noHP << "\n";
+        cout << "Email: " << hasilCocok[0]->email << "\n";
+    }
+
+    Kontak* target = hasilCocok[pilih - 1];
+
+    Kontak* baru = new Kontak{target->nama, target->noHP, target->email, nullptr};
+    if (head == nullptr)
+        head = baru;
+    else {
+        Kontak* temp = head;
+        while (temp->next != nullptr)
+            temp = temp->next;
+        temp->next = baru;
+    }
+
+    ofstream out("blokir.txt");
+    for (Kontak* k : blokirList) {
+        if (k != target) {
+            out << k->nama << "\n" << k->noHP << "\n" << k->email << "\n";
+        }
+        delete k;
+    }
+    out.close();
+
+    simpanFile(head);
+    cout << "Kontak \"" << target->nama << "\" berhasil di-unblok dan ditambahkan kembali ke daftar utama.\n";
 }
 
 
@@ -335,25 +469,34 @@ int main() {
             case 1:
                 tambahKontak(head);
                 simpanFile(head);
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
                 break;
             case 2:
                 tampilkanKontak(head);
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
                 break;
             case 3:
                 cout << "Masukkan nama yang dicari: ";
                 getline(cin, cari);
                 cariKontak(head, cari);
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
                 break;
             case 4:
                 urutkanKontak(head);
                 simpanFile(head);
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
                 break;
             case 5:
                 cout << "Masukkan nama kontak yang ingin diubah: ";
                 getline(cin, cari);
-
                 editnamakontak(head, cari);
                 simpanFile(head);
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
 
                 break;
               case 6:
@@ -361,20 +504,32 @@ int main() {
                 getline(cin, cari);
                 hapusKontak(head, cari);
                 simpanFile(head);
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
                 break;
             case 7:
                 blokirNomor(head);  
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
                 break;
             case 8:
                  tampilkanBlokir();
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
                 break;
             case 9:
-            cout << "Keluar dari program.\n";
+                unblokNomorByNama(head);
+                simpanFile(head);
+                cout << "tekan enter untuk melanjutkan...";
+                cin.get();
+                break;
+            case 10:
+                cout << "keluar dari program.\n";
                 break;
             default:
                 cout << "Pilihan tidak valid.\n";
         }
-    } while (pilihan != 9);
+    } while (pilihan != 10);
 
     hapusSemua(head);
     return 0;
