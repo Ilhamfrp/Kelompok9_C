@@ -459,7 +459,8 @@ int main() {
         cout << "6. Hapus Kontak" << endl;
         cout << "7. Blokir Nomor" << endl;
         cout << "8. Lihat Kontak Terblokir" << endl;
-        cout << "9. Keluar" << endl;
+        cout << "9. Unblokir Nomor" << endl;
+        cout << "10. Keluar" << endl;
         cout << setfill('-') << setw(35) << " "                 << endl;
         cout << "Pilih: ";
         cin >> pilihan;
