@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <limits>
 using namespace std;
 
 struct Kontak {
@@ -464,7 +465,7 @@ int main() {
         cout << setfill('-') << setw(35) << " "                 << endl;
         cout << "Pilih: ";
         cin >> pilihan;
-        cin.ignore();
+         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         switch (pilihan) {
             case 1:
