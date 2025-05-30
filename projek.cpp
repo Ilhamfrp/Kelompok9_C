@@ -288,6 +288,25 @@ void hapusSemua(Kontak*& head) {
     }
 }
 
+void hapusKontakLangsung(Kontak*& head, Kontak* target) {
+    Kontak* temp = head;
+    Kontak* prev = nullptr;
+
+    while (temp != nullptr) {
+        if (temp == target) {
+            if (prev == nullptr) {
+                head = temp->next;
+            } else {
+                prev->next = temp->next;
+            }
+            delete temp;
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+}
+
 void blokirNomor(Kontak*& head) {
     string keyword;
     cout << "Masukkan nama kontak yang ingin diblokir: ";
@@ -334,7 +353,7 @@ void blokirNomor(Kontak*& head) {
                << target->email << "\n";
         blokir.close();
 
-        hapusKontak(head, target->nama, true);
+        hapusKontakLangsung(head, target);
         simpanFile(head);
 
         cout << "Kontak \"" << target->nama << "\" berhasil diblokir dan dihapus dari daftar utama.\n";
