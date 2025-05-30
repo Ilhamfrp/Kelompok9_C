@@ -105,8 +105,9 @@ void cariKontak(Kontak* head, const string& keyword) {
         cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
 }
 
-void hapusKontak(Kontak*& head, const string& keyword) {
+void hapusKontak(Kontak*& head, const string& keyword, bool blokir = false) {
     if (head == nullptr) {
+        if(!blokir)
         cout << "Daftar kontak kosong.\n";
         return;
     }
@@ -124,6 +125,7 @@ void hapusKontak(Kontak*& head, const string& keyword) {
                 prev->next = temp->next;
             }
             delete temp;
+            if(!blokir)
             cout << "Kontak \"" << keyword << "\" berhasil dihapus.\n";
             return;
         }
@@ -131,7 +133,7 @@ void hapusKontak(Kontak*& head, const string& keyword) {
         temp = temp->next;
     }
 
-    if (!ditemukan) {
+    if (!ditemukan && !blokir) {
         cout << "Kontak dengan nama \"" << keyword << "\" tidak ditemukan.\n";
     }
 }
@@ -203,7 +205,7 @@ void blokirNomor(Kontak*& head) {
         blokir.close();
 
   
-        hapusKontak(head, nama);
+        hapusKontak(head, nama, true);
         simpanFile(head);
 
         cout << "Kontak \"" << nama << "\" berhasil diblokir dan dihapus dari daftar utama.\n";
