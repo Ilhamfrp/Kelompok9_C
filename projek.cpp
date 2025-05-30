@@ -1,3 +1,14 @@
+//ANGGOTA GRUP//
+//------------//
+// Nama :Putri Karina Tumanggor
+// NIM  :124240047
+//------------//
+//Nama : Ilham fashya rifqi pranoto
+//NIM    : 124240049
+//------------//
+// Nama :Kanza Widi Bagaskara
+// NIM  :124240059
+
 #include <iostream>
 #include <fstream>
 #include <string>
